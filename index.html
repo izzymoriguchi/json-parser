@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSON Parser</title>
+
+    <script type="text/javascript">
+        function viewJSON(what) {
+            var URL = what.URL.value;
+            function loadJSON(url) {
+                // var xmlhttp;
+                if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp = new XMLHttpRequest();
+                } else {// code for IE6, IE5
+                    xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.open("GET", url, false);
+                xmlhttp.send();
+
+                jsonObj = JSON.parse(xmlhttp.responseText);
+                return jsonObj;
+            }
+
+            jsonObj = loadJSON(URL);
+
+            //if IE, simply execute script (due to async prop).
+            if (window.ActiveXObject) {
+                if (jsonObj.parseError.errorCode != 0) {
+                    var myErr = jsonObj.parseError;
+                    generateError(jsonObj);
+                    hWin = window.open("", "Error", "height=300,width=340");
+                    hWin.document.write(html_text);
+                } else {
+                    generateHTML(jsonObj);
+                    hWin = window.open("", "Assignment3", "height=800,width=600");
+                    hWin.document.write(html_text);
+                }
+            } else { //else if FF, execute script once JSON object has loaded
+                jsonObj.onload = generateHTML(jsonObj);
+                hWin = window.open("", "Assignment3", "height=800,width=600");
+                hWin.document.write(html_text);
+            }
+            hWin.document.close();
+        }
+
+        function generateHTML(jsonObj) {
+            root = jsonObj.DocumentElement;
+            html_text = "<html><head><title>JSON Parse Result</title></head><body>";
+            html_text += "<table border='2'>";
+
+            planes = jsonObj.catalog.aircraft; // an array of planes
+            planeNodeList = planes[0];
+            html_text += "<tbody>";
+            html_text += "<tr>";
+            x = 0;
+            y = 0;
+
+            headerData = jsonObj.Mainline.Table.Header.Data; // an array of header data
+            for (i = 0; i < headerData.length; i++) {
+                html_text += "<th>" + headerData[i] + "</th>";
+            }
+            html_text += "</tr>";
+
+            // TODO: output values
+            for(i=0;i<planes.length;i++) //do for all planes (one per row)
+            {
+                planeNodeList=planes[i]; //get properties of a plane (an object)
+                html_text+="<tr>";      //start a new row of the output table
+                var aircraft_keys = Object.keys(planeNodeList);
+                for(j=0;j<aircraft_keys.length;j++)
+                {
+                    prop = aircraft_keys[j];
+                    if(aircraft_keys[j]=="Image")
+                    {//handle images separately
+                        html_text+="<td><img src='"+ planeNodeList[prop] +"' width='"+x+"' height='"+y+"'></td>";
+                    } else {
+                        html_text+="<td>"+ planeNodeList[prop] +"</td>";
+                    }
+                }
+                html_text+="</tr>";
+            }
+
+            html_text+="</tbody>";  html_text+="</table>";
+            html_text+="</body></html>";
+        }
+
+    </script>
+
+</head>
+<body>
+    <h1>Enter URL for Trucking List JSON File</h1>
+    <form name="myform" method="POST" id="location">
+        <input type="text" name="URL" value="truckinglist.json">
+        <br><br>
+        <input type="submit" value="Submit Query" onclick="viewJSON(this.form)">
+    </form>
+</body>
+</html>
