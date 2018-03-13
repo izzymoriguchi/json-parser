@@ -65,10 +65,13 @@
                 var company_keys = Object.keys(company);
                 for(j = 0; j < company_keys.length; j++) {
                     prop = company_keys[j];
-                    if(company_keys[j] == "Logo") {
+                    if(prop == "Logo") {
                         html_text += "<td><img src='" + company[prop] + "' width='" + x + "' height='" + y + "'></td>";
+                    } else if (prop == "HomePage") {
+                        html_text += "<td><a href='" + company[prop] + "'>" + company[prop] + "</a>";
+                    } else if (prop == "Hubs") {
+
                     } else {
-                        // console.log("Hello company of "+ i + "th: " + company[prop]);
                         html_text += "<td>" + company[prop] + "</td>";
                     }
                 }
