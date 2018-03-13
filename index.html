@@ -60,15 +60,16 @@
             arrOfCompanies = jsonObj.Mainline.Table.Row;
             for(i = 0; i < arrOfCompanies.length; i++) {
                 company = arrOfCompanies[i];
-                console.log("Hello company of "+ i + "th: " + company);
+
                 html_text += "<tr>";
                 var company_keys = Object.keys(company);
                 for(j = 0; j < company_keys.length; j++) {
                     prop = company_keys[j];
-                    if(company_keys[j] == "Image") {//handle images separately
+                    if(company_keys[j] == "Logo") {//handle images separately
                         // html_text += "<td><img src='" + planeNodeList[prop] + "' width='" + x + "' height='" + y + "'></td>";
                     } else {
-                        html_text += "<td>" + arrOfCompanies[prop] + "</td>";
+                        // console.log("Hello company of "+ i + "th: " + company[prop]);
+                        html_text += "<td>" + company[prop] + "</td>";
                     }
                 }
                 html_text += "</tr>";
