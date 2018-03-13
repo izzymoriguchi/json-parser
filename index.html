@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>JSON Parser</title>
 
-    <script type="text/javascript">
+    <script>
         function viewJSON(what) {
             var URL = what.URL.value;
             function loadJSON(url) {
-                // var xmlhttp;
                 if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
                     xmlhttp = new XMLHttpRequest();
                 } else {// code for IE6, IE5
@@ -16,7 +14,6 @@
                 }
                 xmlhttp.open("GET", url, false);
                 xmlhttp.send();
-
                 jsonObj = JSON.parse(xmlhttp.responseText);
                 return jsonObj;
             }
@@ -48,8 +45,6 @@
             html_text = "<html><head><title>JSON Parse Result</title></head><body>";
             html_text += "<table border='2'>";
 
-            planes = jsonObj.catalog.aircraft; // an array of planes
-            planeNodeList = planes[0];
             html_text += "<tbody>";
             html_text += "<tr>";
             x = 0;
@@ -62,26 +57,26 @@
             html_text += "</tr>";
 
             // TODO: output values
-            for(i=0;i<planes.length;i++) //do for all planes (one per row)
-            {
-                planeNodeList=planes[i]; //get properties of a plane (an object)
-                html_text+="<tr>";      //start a new row of the output table
-                var aircraft_keys = Object.keys(planeNodeList);
-                for(j=0;j<aircraft_keys.length;j++)
-                {
-                    prop = aircraft_keys[j];
-                    if(aircraft_keys[j]=="Image")
-                    {//handle images separately
-                        html_text+="<td><img src='"+ planeNodeList[prop] +"' width='"+x+"' height='"+y+"'></td>";
+            arrOfCompanies = jsonObj.Mainline.Table.Row;
+            for(i = 0; i < arrOfCompanies.length; i++) {
+                company = arrOfCompanies[i];
+                console.log("Hello company of "+ i + "th: " + company);
+                html_text += "<tr>";
+                var company_keys = Object.keys(company);
+                for(j = 0; j < company_keys.length; j++) {
+                    prop = company_keys[j];
+                    if(company_keys[j] == "Image") {//handle images separately
+                        // html_text += "<td><img src='" + planeNodeList[prop] + "' width='" + x + "' height='" + y + "'></td>";
                     } else {
-                        html_text+="<td>"+ planeNodeList[prop] +"</td>";
+                        html_text += "<td>" + arrOfCompanies[prop] + "</td>";
                     }
                 }
-                html_text+="</tr>";
+                html_text += "</tr>";
             }
 
-            html_text+="</tbody>";  html_text+="</table>";
-            html_text+="</body></html>";
+            html_text += "</tbody>";
+            html_text += "</table>";
+            html_text += "</body></html>";
         }
 
     </script>
@@ -90,9 +85,9 @@
 <body>
     <h1>Enter URL for Trucking List JSON File</h1>
     <form name="myform" method="POST" id="location">
-        <input type="text" name="URL" value="truckinglist.json">
-        <br><br>
-        <input type="submit" value="Submit Query" onclick="viewJSON(this.form)">
+        <input type="text" name="URL" maxlength="255" size="100" value="truckinglist.json">
+        <br />
+        <input type="button" name="submit" value="Submit Query" onclick="viewJSON(this.form)">
     </form>
 </body>
 </html>
