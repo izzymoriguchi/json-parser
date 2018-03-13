@@ -47,29 +47,32 @@
 
             html_text += "<tbody>";
             html_text += "<tr>";
-            x = 100;
-            y = 100;
+            x = 300;
+            y = 150;
 
             headerData = jsonObj.Mainline.Table.Header.Data; // an array of header data
             for (i = 0; i < headerData.length; i++) {
                 html_text += "<th>" + headerData[i] + "</th>";
             }
             html_text += "</tr>";
-
-            // TODO: output values
             arrOfCompanies = jsonObj.Mainline.Table.Row;
-            for(i = 0; i < arrOfCompanies.length; i++) {
+            for (i = 0; i < arrOfCompanies.length; i++) {
                 company = arrOfCompanies[i];
-
                 html_text += "<tr>";
                 var company_keys = Object.keys(company);
-                for(j = 0; j < company_keys.length; j++) {
+                for (j = 0; j < company_keys.length; j++) {
                     prop = company_keys[j];
                     if(prop == "Logo") {
                         html_text += "<td><img src='" + company[prop] + "' width='" + x + "' height='" + y + "'></td>";
                     } else if (prop == "HomePage") {
                         html_text += "<td><a href='" + company[prop] + "'>" + company[prop] + "</a>";
                     } else if (prop == "Hubs") {
+                        info = company[prop].Hub;
+                        html_text += "<td><ul>";
+                        for (k = 0; k < info.length; k++) {
+                            html_text += "<li>" + info[k] + "</li>";
+                        }
+                        html_text += "</ul></td>";
 
                     } else {
                         html_text += "<td>" + company[prop] + "</td>";
