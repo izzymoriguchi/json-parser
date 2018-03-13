@@ -2,19 +2,24 @@
 <html>
 <head>
     <title>JSON Parser</title>
-
     <script>
         function viewJSON(what) {
             var URL = what.URL.value;
             function loadJSON(url) {
                 if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
                     xmlhttp = new XMLHttpRequest();
-                } else {// code for IE6, IE5
+                } else { // code for IE6, IE5
                     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
                 }
-                xmlhttp.open("GET", url, false);
-                xmlhttp.send();
-                jsonObj = JSON.parse(xmlhttp.responseText);
+                try {
+                    xmlhttp.open("GET", url, false);
+                    xmlhttp.send();
+                    jsonObj = JSON.parse(xmlhttp.responseText);
+                } catch (err) { // error for the case where the file does not exist
+                    console.log("Error is : " + err.message);
+                    alert("The JSON file does not exist!")
+                    return;
+                }
                 return jsonObj;
             }
 
@@ -28,20 +33,32 @@
                     hWin = window.open("", "Error", "height=300,width=340");
                     hWin.document.write(html_text);
                 } else {
-                    generateHTML(jsonObj);
-                    hWin = window.open("", "Assignment3", "height=800,width=600");
-                    hWin.document.write(html_text);
+                    x = generateHTML(jsonObj);
+                    if (x != -1) {
+                        hWin = window.open("", "Assignment3", "height=800,width=600");
+                        hWin.document.write(html_text);
+                    }
                 }
             } else { //else if FF, execute script once JSON object has loaded
                 jsonObj.onload = generateHTML(jsonObj);
-                hWin = window.open("", "Assignment3", "height=800,width=600");
-                hWin.document.write(html_text);
+                if (jsonObj.onload != -1) {
+                    hWin = window.open("", "Assignment3", "height=800,width=600");
+                    hWin.document.write(html_text);
+                }
             }
             hWin.document.close();
         }
 
         function generateHTML(jsonObj) {
             root = jsonObj.DocumentElement;
+
+            headerDataLength = 6;
+            headerData = jsonObj.Mainline.Table.Header.Data; // an array of header data
+            if (headerData.length != headerDataLength) { // error handling for the case where the Header data values are different
+                alert("The Header data values are different");
+                return -1;
+            }
+
             html_text = "<html><head><title>JSON Parse Result</title></head><body>";
             html_text += "<table border='2'>";
 
@@ -50,42 +67,44 @@
             x = 300;
             y = 150;
 
-            headerData = jsonObj.Mainline.Table.Header.Data; // an array of header data
             for (i = 0; i < headerData.length; i++) {
                 html_text += "<th>" + headerData[i] + "</th>";
             }
-            html_text += "</tr>";
+
             arrOfCompanies = jsonObj.Mainline.Table.Row;
-            for (i = 0; i < arrOfCompanies.length; i++) {
-                company = arrOfCompanies[i];
-                html_text += "<tr>";
-                var company_keys = Object.keys(company);
-                for (j = 0; j < company_keys.length; j++) {
-                    prop = company_keys[j];
-                    if(prop == "Logo") {
-                        html_text += "<td><img src='" + company[prop] + "' width='" + x + "' height='" + y + "'></td>";
-                    } else if (prop == "HomePage") {
-                        html_text += "<td><a href='" + company[prop] + "'>" + company[prop] + "</a>";
-                    } else if (prop == "Hubs") {
-                        info = company[prop].Hub;
-                        html_text += "<td><ul>";
-                        for (k = 0; k < info.length; k++) {
-                            html_text += "<li>" + info[k] + "</li>";
-                        }
-                        html_text += "</ul></td>";
-
-                    } else {
-                        html_text += "<td>" + company[prop] + "</td>";
-                    }
-                }
+            if (arrOfCompanies == undefined) { // error handling for the case where a file not containing trucking companies
+                alert("The file does not contain any trucking companies!");
+            } else {
                 html_text += "</tr>";
-            }
+                for (i = 0; i < arrOfCompanies.length; i++) {
+                    company = arrOfCompanies[i];
+                    html_text += "<tr>";
+                    var company_keys = Object.keys(company);
+                    for (j = 0; j < company_keys.length; j++) {
+                        prop = company_keys[j];
+                        if(prop == "Logo") {
+                            html_text += "<td><img src='" + company[prop] + "' width='" + x + "' height='" + y + "'></td>";
+                        } else if (prop == "HomePage") {
+                            html_text += "<td><a href='" + company[prop] + "'>" + company[prop] + "</a>";
+                        } else if (prop == "Hubs") {
+                            info = company[prop].Hub;
+                            html_text += "<td><ul>";
+                            for (k = 0; k < info.length; k++) {
+                                html_text += "<li>" + info[k] + "</li>";
+                            }
+                            html_text += "</ul></td>";
 
+                        } else {
+                            html_text += "<td>" + company[prop] + "</td>";
+                        }
+                    }
+                    html_text += "</tr>";
+                }
+            }
             html_text += "</tbody>";
             html_text += "</table>";
             html_text += "</body></html>";
         }
-
     </script>
 
 </head>
